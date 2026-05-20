@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuhrparkmanagement</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Fuhrparkmanagement</h1>
+        <nav>
+            <button class="nav-btn active" data-target="vehicule">Fahrzeugverwaltung</button>
+            <button class="nav-btn" data-target="soferi">Fahrerverwaltung</button>
+            <button class="nav-btn" data-target="service">Servicemanagement</button>
+            <button class="nav-btn" data-target="asigurari">Versicherungen</button>
+            <button class="nav-btn" data-target="viniete">Vignetten</button>
+            <button class="nav-btn" data-target="anvelope">Reifen</button>
+        </nav>
+    </header>
+
+    <main>
+        <div id="tab-vehicule" class="tab-content active">
+            <section class="sectiune">
+                <h2>Neues Fahrzeug hinzufügen</h2>
+                <form id="form-vehicule">
+                    <input type="text" id="v_inmat" placeholder="Kennzeichen (max. 12 Zeichen)" maxlength="12" pattern="[A-Za-z0-9]+" required>
+                    <input type="text" id="v_vin" placeholder="FIN / Fahrgestellnummer (exakt 17 Zeichen)" minlength="17" maxlength="17" pattern="[A-Za-z0-9]{17}" required>
+                    <input type="text" id="v_marca" placeholder="Marke (max. 50 Zeichen)" maxlength="50" required>
+                    <input type="text" id="v_model" placeholder="Modell (max. 50 Zeichen)" maxlength="50" required>
+                    <input type="number" id="v_km" placeholder="Kilometerstand (ganze positive Zahl)" min="0" step="1" required>
+                    <select id="v_status" required>
+                        <option value="Verfügbar">Verfügbar</option>
+                        <option value="Im Service">Im Service</option>
+                        <option value="Inaktiv">Inaktiv</option>
+                    </select>
+                    <button type="submit" class="btn-save">Fahrzeug speichern</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Fahrzeugliste</h2><div id="lista-vehicule"></div></section>
+        </div>
+
+        <div id="tab-soferi" class="tab-content">
+            <section class="sectiune">
+                <h2>Neuen Fahrer hinzufügen</h2>
+                <form id="form-soferi">
+                    <input type="text" id="s_nume" placeholder="Vollständiger Name (Vor- und Nachname)" maxlength="100" required>
+                    <select id="s_permis" required>
+                        <option value="B">Klasse B</option>
+                        <option value="C">Klasse C</option>
+                        <option value="CE">Klasse CE</option>
+                        <option value="B, C, CE">Klassen B, C, CE</option>
+                    </select>
+                    <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:5px;">Ablaufdatum des Führerscheins:</label>
+                    <input type="date" id="s_expirare" required>
+                    <button type="submit" class="btn-save">Fahrer speichern</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Fahrerliste</h2><div id="lista-soferi"></div></section>
+        </div>
+
+        <div id="tab-service" class="tab-content">
+            <section class="sectiune">
+                <h2>Service- / TÜV-Planung erfassen</h2>
+                <form id="form-service">
+                    <select id="srv_masina" required><option value="">-- Fahrzeug auswählen --</option></select>
+                    <select id="srv_tip" required>
+                        <option value="Ölwechsel">Ölwechsel</option>
+                        <option value="Bremsen">Bremsen</option>
+                        <option value="Inspektion">Inspektion</option>
+                        <option value="Reparatur">Reparatur</option>
+                    </select>
+                    <input type="number" id="srv_urmator_km" placeholder="Nächster Service bei (km)" min="0" step="1" required>
+                    <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:5px;">TÜV-Ablaufdatum:</label>
+                    <input type="date" id="srv_tuv" required>
+                    <button type="submit" class="btn-save">Servicedaten speichern</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Service-Historie & Planung</h2><div id="lista-service"></div></section>
+        </div>
+
+        <div id="tab-asigurari" class="tab-content">
+            <section class="sectiune">
+                <h2>Versicherungspolice hinzufügen</h2>
+                <form id="form-asigurari">
+                    <select id="asig_masina" required><option value="">-- Fahrzeug auswählen --</option></select>
+                    <select id="asig_tip" required>
+                        <option value="Haftpflicht">Haftpflicht</option>
+                        <option value="Kasko">Kasko</option>
+                    </select>
+                    <input type="text" id="asig_polita" placeholder="Policennummer (max. 30 Zeichen)" maxlength="30" required>
+                    <label style="font-size:11px; font-weight:bold;">Gültig von:</label>
+                    <input type="date" id="asig_de_la" required>
+                    <label style="font-size:11px; font-weight:bold;">Gültig bis:</label>
+                    <input type="date" id="asig_pana" required>
+                    <input type="number" id="asig_cost" placeholder="Jährliche Kosten (EUR)" min="0" step="0.01" required>
+                    <button type="submit" class="btn-save">Versicherung speichern</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Versicherungsregister</h2><div id="lista-asigurari"></div></section>
+        </div>
+
+        <div id="tab-viniete" class="tab-content">
+            <section class="sectiune">
+                <h2>Vignette hinzufügen</h2>
+                <form id="form-viniete">
+                    <select id="vin_masina" required><option value="">-- Fahrzeug auswählen --</option></select>
+                    <select id="vin_land" required>
+                        <option value="Rumänien">Rumänien</option>
+                        <option value="Ungarn">Ungarn</option>
+                        <option value="Österreich">Österreich</option>
+                    </select>
+                    <select id="vin_tip" required>
+                        <option value="7 Tage">7 Tage</option>
+                        <option value="1 Monat">1 Monat</option>
+                        <option value="1 Jahr">1 Jahr</option>
+                    </select>
+                    <label style="font-size:11px; font-weight:bold;">Ablaufdatum der Vignette:</label>
+                    <input type="date" id="vin_expirare" required>
+                    <button type="submit" class="btn-save">Vignette speichern</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Erworbene Vignetten</h2><div id="lista-viniete"></div></section>
+        </div>
+
+        <div id="tab-anvelope" class="tab-content">
+            <section class="sectiune">
+                <h2>Reifenmanagement</h2>
+                <form id="form-anvelope">
+                    <select id="anv_masina" required><option value="">-- Fahrzeug auswählen --</option></select>
+                    <select id="anv_tip" required>
+                        <option value="Sommerreifen">Sommerreifen</option>
+                        <option value="Winterreifen">Winterreifen</option>
+                        <option value="Allwetter">Allwetter</option>
+                    </select>
+                    <input type="number" id="anv_profil" placeholder="Profiltiefe in mm (z.B. 4.5)" min="0" max="25" step="0.1" required>
+                    <input type="text" id="anv_locatie" placeholder="Lagerort (max. 100 Zeichen)" maxlength="100" required>
+                    <button type="submit" class="btn-save">Reifen registrieren</button>
+                </form>
+            </section>
+            <section class="sectiune"><h2>Reifenstatus / Lagerorte</h2><div id="lista-anvelope"></div></section>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
