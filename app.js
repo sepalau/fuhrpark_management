@@ -50,7 +50,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // 4. POPULARE DROPDOWN-URI DINAMICE
+    // 4. NOU: MODIFICARE STATUS VEHICUL DIRECT DIN LISTĂ
+    window.schimbaStatusVehicul = function(id, statusCurent) {
+        const nouStatus = prompt("Neuen Status eingeben (Verfügbar / Im Service / Inaktiv):", statusCurent);
+        if (!nouStatus) return; // Dacă utilizatorul apasă pe Cancel, se oprește execuția
+
+        const optiuniValide = ['Verfügbar', 'Im Service', 'Inaktiv'];
+        if (!optiuniValide.includes(nouStatus)) {
+            alert("Ungültiger Status! Bitte genau eingeben: Verfügbar, Im Service oder Inaktiv");
+            return;
+        }
+
+        fetch(`backend.php?modul=vehicule_status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, status: nouStatus })
+        })
+        .then(res => res.json())
+        .then(raspuns => {
+            alert(raspuns.mesaj);
+            incarcaToateDatele(); // Reîncărcăm listele pentru a afișa noul status pe ecran
+        });
+    };
+
+    // 5. POPULARE DROPDOWN-URI DINAMICE
     function populeazaDropdownuriMasini(vehicule) {
         const dropdowns = [
             document.getElementById('srv_masina'),
@@ -71,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. INCARCARE INDEPENDENTA (Cu forțare Anti-Cache prin Timestamp)
+    // 6. INCARCARE INDEPENDENTA (Anti-Cache prin Timestamp)
     window.incarcaModulMecanism = function(modul, idContainer, functieRandare) {
         const urlFaraCache = `backend.php?modul=${modul}&_ts=${new Date().getTime()}`;
 
@@ -106,8 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.incarcaToateDatele = function() {
+        // Am adăugat butonul de status în șablonul vehiculului
         incarcaModulMecanism('vehicule', 'lista-vehicule', (i) => 
-            `<div class="masina-card"><strong>${i.inmat}</strong> - ${i.marca} ${i.model} <button class="btn-delete" onclick="stergeElement('vehicule', '${i.id}')">Löschen</button><br><small>FIN: ${i.vin} | KM: ${i.km} | Status: <strong>${i.status}</strong></small></div>`);
+            `<div class="masina-card"><strong>${i.inmat}</strong> - ${i.marca} ${i.model} 
+            <button class="btn-delete" onclick="stergeElement('vehicule', '${i.id}')">Löschen</button>
+            <button class="btn-action" onclick="schimbaStatusVehicul('${i.id}', '${i.status}')">Status ändern</button>
+            <br><small>FIN: ${i.vin} | KM: ${i.km} | Status: <strong>${i.status}</strong></small></div>`);
         
         incarcaModulMecanism('soferi', 'lista-soferi', (i) => 
             `<div class="masina-card"><strong>${i.nume}</strong> <button class="btn-delete" onclick="stergeElement('soferi', '${i.id}')">Löschen</button><br><small>Klasse: ${i.permis} | Ablaufdatum: ${i.expirare}</small></div>`);
@@ -127,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     incarcaToateDatele();
 
-    // 6. ATAȘARE FORMULARE (POST)
+    // 7. ATAȘARE FORMULARE (POST)
     function configureazaSalvare(idForm, modul, structuraDateFunc) {
         const formElement = document.getElementById(idForm);
         if(!formElement) return;
@@ -140,7 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(structuraDateFunc())
             }).then(r => r.json()).then(raspuns => {
                 alert(raspuns.mesaj);
-                formElement.reset();
+                if (raspuns.status !== 'error') {
+                    formElement.reset();
+                }
                 incarcaToateDatele();
             }).catch(err => {
                 alert("Fehler beim Speichern!");
